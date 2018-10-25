@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
 import { Subscription } from 'rxjs';
+import { ConstantPool } from '@angular/compiler';
 
 
 @Component({
@@ -17,12 +18,16 @@ export class PostListComponent implements OnInit, OnDestroy {
   constructor(public postsService: PostsService) {}
 
   ngOnInit() {
-    this.postsService.getPost();
+    this.postsService.getPosts();
     this.postSubcri = this.postsService.getPostUpdateListener().subscribe((postsUpdate: Post[]) => {
       this.posts = postsUpdate;
     });
   }
   
+  onDelete(postId: string) {
+    this.postsService.deletePost(postId);
+  }
+
   ngOnDestroy() {
     this.postSubcri.unsubscribe();
   }

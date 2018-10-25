@@ -2,6 +2,7 @@ import { Post } from './post.model';
 import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { map, subscribeOn } from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
 export class PostsService {
@@ -10,11 +11,21 @@ export class PostsService {
 
     constructor(private http: HttpClient) {}
 
-    getPost() {
+    getPosts() {
         // return [...this.posts];     // true copy of the posts, use typescript and javascript feature called the spread operator
-        this.http.get<{message: string, post: Post[]}>('http://localhost:3000/api/posts')
-            .subscribe((postData) => {
-                this.posts = postData.post;
+        this.http
+            .get<{message: string, posts: any}>('http://localhost:3000/api/posts')
+            .pipe(map((postData) => {
+                return postData.posts.map(post => {
+                    return {
+                        title: post.title,
+                        content: post.content,
+                        id: post._id
+                    };
+                });
+            }))
+            .subscribe(tranformedPost => {
+                this.posts = tranformedPost;
                 this.postsUpdated.next([...this.posts]);
             });
     }
@@ -25,7 +36,25 @@ export class PostsService {
 
     addPost(title: string, content: string) {
         const post: Post = {id: null, title: title, content: content};
-        this.posts.push(post);
-        this.postsUpdated.next([...this.posts]);    // put new value and then copy 
+        this.http
+            .post<{message: string, postId: string}>('http://localhost:3000/api/posts', post)
+            .subscribe((responseData) => {
+                console.log(responseData.message);
+                post.id = responseData.postId;
+                this.posts.push(post);
+                this.postsUpdated.next([...this.posts]);    // put new value and then copy 
+        });
     }
+
+    deletePost(postId: string) {
+        this.http
+            .delete('http://localhost:3000/api/posts/' + postId)
+            .subscribe(() => {
+                console.log('Deleted in service!');
+                const updatePosts = this.posts.filter(post => post.id !== postId);
+                this.posts = updatePosts;
+                this.postsUpdated.next([...this.posts]);
+            });
+    }
+
 }
