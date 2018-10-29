@@ -1,14 +1,15 @@
 <mat-card>
   <form (submit)="onAddPost(postForm)" #postForm="ngForm">
     <mat-form-field>
-      <input matInput type="text" ngModel name="title" #title="ngModel" placeholder="Title" required>
+      <input matInput type="text" [ngModel]="post?.title" name="title" #title="ngModel" placeholder="Title" required>
         <!-- ngModel: this is directive that child control with the form (send value of this input via form) -->
         <!-- name="title" is attribute of this ngModule(form) (like Java that we can be use .title in file.ts) -->
         <!-- #title="ngModel": This gives you a reference to the Angular NgModel; assign ngModel to tag "title" to call at other location to use control status like invalid...  -->
       <mat-error *ngIf="title.invalid">Please enter a post to this the title</mat-error>
     </mat-form-field>
     <mat-form-field>
-      <textarea matInput row="1" ngModel name="content" #content="ngModel" placeholder="Content" required></textarea>
+      <!-- ? this will force angular to check whether a post exists before it tries to read the title and it will populate this field with nothing.  -->
+      <textarea matInput row="1" [ngModel]="post?.content" name="content" #content="ngModel" placeholder="Content" required></textarea>
       <mat-error *ngIf="content.invalid">Please enter a post to this the content</mat-error>
     </mat-form-field>
     <button mat-raised-button color="warn" type="submit">save post</button>
