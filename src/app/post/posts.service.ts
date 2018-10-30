@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, subscribeOn } from 'rxjs/operators';
+import { stringify } from '@angular/compiler/src/util';
 
 @Injectable({providedIn: 'root'})
 export class PostsService {
@@ -36,7 +37,10 @@ export class PostsService {
 
     getPost(id: string) {
         // return post from array posts in fe, this is not a query from db.
-        return {...this.posts.find(p => p.id === id)};
+        // return {...this.posts.find(p => p.id === id)};
+
+        // return post from db to fix a error F5 in edit page.
+        return this.http.get<{_id: string, title: string, content: string}>('http://localhost:3000/api/posts/' + id);
     }
 
     addPost(title: string, content: string) {
