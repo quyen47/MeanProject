@@ -14,12 +14,13 @@ import { ConstantPool } from '@angular/compiler';
 export class PostListComponent implements OnInit, OnDestroy {
   private postSubcri: Subscription;
   posts: Post[] = [];
-
+  private isLoading = true;
   constructor(public postsService: PostsService) {}
 
   ngOnInit() {
     this.postsService.getPosts();
     this.postSubcri = this.postsService.getPostUpdateListener().subscribe((postsUpdate: Post[]) => {
+      this.isLoading = false;
       this.posts = postsUpdate;
     });
   }

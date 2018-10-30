@@ -3,14 +3,14 @@ import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, subscribeOn } from 'rxjs/operators';
-import { stringify } from '@angular/compiler/src/util';
+import { Router } from '@angular/router';
 
 @Injectable({providedIn: 'root'})
 export class PostsService {
     private posts: Post[] = [];     // array, obj and funtion are reference type (just copy address, not true value)
     private postsUpdated = new Subject<Post[]>(); // array to contain the post that is updated when click the save button.
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient, private router: Router) {}
 
     getPosts() {
         // return [...this.posts];     // true copy of the posts, use typescript and javascript feature called the spread operator
@@ -52,6 +52,7 @@ export class PostsService {
                 post.id = responseData.postId;
                 this.posts.push(post);
                 this.postsUpdated.next([...this.posts]);    // put new value and then copy 
+                this.router.navigate(['/']);
         });
     }
 
@@ -72,6 +73,7 @@ export class PostsService {
             .put('http://localhost:3000/api/posts/' + id, post)
             .subscribe((responseData) => {
                 console.log(responseData);
+                this.router.navigate(['/']);
             });
     }
 }
