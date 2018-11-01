@@ -5,31 +5,36 @@ import { HttpClient } from '@angular/common/http';
 import { map, subscribeOn } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class PostsService {
     private posts: Post[] = [];     // array, obj and funtion are reference type (just copy address, not true value)
-    private postsUpdated = new Subject<Post[]>(); // array to contain the post that is updated when click the save button.
 
-    constructor(private http: HttpClient, private router: Router) {}
+    // array to contain the post that is updated when click the save button.
+    private postsUpdated = new Subject<{ posts: Post[], count: number }>();
+
+    constructor(private http: HttpClient, private router: Router) { }
 
     getPosts(pageSize: number, currentPage: number) {
         const queryParams = `?pageSize=${pageSize}&currentPage=${currentPage}`;
 
         // return [...this.posts];     // true copy of the posts, use typescript and javascript feature called the spread operator
         this.http
-            .get<{message: string, posts: any}>('http://localhost:3000/api/posts' + queryParams)
+            .get<{ message: string, posts: any, count: number }>('http://localhost:3000/api/posts' + queryParams)
             .pipe(map((postData) => {
-                return postData.posts.map(post => {
-                    return {
-                        title: post.title,
-                        content: post.content,
-                        id: post._id
-                    };
-                });
+                return {
+                    posts: postData.posts.map(post => {
+                        return {
+                            title: post.title,
+                            content: post.content,
+                            id: post._id
+                        };
+                    }),
+                    count: postData.count
+                };
             }))
             .subscribe(tranformedPost => {
-                this.posts = tranformedPost;
-                this.postsUpdated.next([...this.posts]);
+                this.posts = tranformedPost.posts;
+                this.postsUpdated.next({ posts: [...this.posts], count: tranformedPost.count });
             });
     }
 
@@ -42,35 +47,25 @@ export class PostsService {
         // return {...this.posts.find(p => p.id === id)};
 
         // return post from db to fix a error F5 in edit page.
-        return this.http.get<{_id: string, title: string, content: string}>('http://localhost:3000/api/posts/' + id);
+        return this.http.get<{ _id: string, title: string, content: string }>('http://localhost:3000/api/posts/' + id);
     }
 
     addPost(title: string, content: string) {
-        const post: Post = {id: null, title: title, content: content};
+        const post: Post = { id: null, title: title, content: content };
         this.http
-            .post<{message: string, postId: string}>('http://localhost:3000/api/posts', post)
+            .post<{ message: string, postId: string }>('http://localhost:3000/api/posts', post)
             .subscribe((responseData) => {
-                console.log(responseData.message);
-                post.id = responseData.postId;
-                this.posts.push(post);
-                this.postsUpdated.next([...this.posts]);    // put new value and then copy 
                 this.router.navigate(['/']);
-        });
-    }
-
-    deletePost(postId: string) {
-        this.http
-            .delete('http://localhost:3000/api/posts/' + postId)
-            .subscribe(() => {
-                console.log('Deleted in service!');
-                const updatePosts = this.posts.filter(post => post.id !== postId);
-                this.posts = updatePosts;
-                this.postsUpdated.next([...this.posts]);
             });
     }
 
+    deletePost(postId: string) {
+        return this.http
+            .delete('http://localhost:3000/api/posts/' + postId);
+    }
+
     updatePost(id: string, title: string, content: string) {
-        const post: Post = {id: id, title: title, content: content};
+        const post: Post = { id: id, title: title, content: content };
         this.http
             .put('http://localhost:3000/api/posts/' + id, post)
             .subscribe((responseData) => {
