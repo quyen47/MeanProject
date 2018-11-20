@@ -10,7 +10,10 @@
     </mat-form-field>
     <div>
       <button mat-stroked-button type="button" color="primary" (click)="inputImage.click()">Upload image</button>
-      <input type="file" #inputImage id="inputImage">
+      <input type="file" #inputImage id="inputImage" (change)="onImagePicked($event)">
+    </div>
+    <div class="image-preview" *ngIf="imagePreview && imagePreview !== ''">
+      <img [src]="imagePreview" [alt]="postForm.value.title">
     </div>
     <mat-form-field>
       <!-- ? this will force angular to check whether a post exists before it tries to read the title and it will populate this field with nothing.  -->

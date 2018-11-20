@@ -16,6 +16,7 @@ export class PostCreateComponent implements OnInit {
   mode = 'create';
   private isLoading = false;
   postForm: FormGroup;
+  imagePreview: string;
 
   constructor(public postsService: PostsService, public router: ActivatedRoute) {}
 
@@ -26,6 +27,9 @@ export class PostCreateComponent implements OnInit {
       }),
       content: new FormControl(null, {
         validators: [Validators.required, Validators.minLength(3)]
+      }),
+      image: new FormControl(null, {
+        validators: [Validators.required]
       })
     });
     this.router.paramMap.subscribe((paramMap: ParamMap) => {
@@ -38,13 +42,25 @@ export class PostCreateComponent implements OnInit {
           .subscribe(postData => {
             this.isLoading = false;
             this.post = {id: postData._id, title: postData.title, content: postData.content};
-            this.postForm.setValue({'title': this.post.title, 'content': this.post.content});
+            this.postForm.setValue({'title': this.post.title, 'content': this.post.content, 'image': null});
           });
       } else {
         this.mode = 'create';
         this.postId = null;
       }
     });
+  }
+
+  onImagePicked(event: Event) {
+    const fileImage = (event.target as HTMLInputElement).files[0];
+    this.postForm.patchValue({image: fileImage});
+    // this.postForm.get('image').updateValueAndValidity();
+
+    const reader = new FileReader();
+    reader.onload= () => {
+      this.imagePreview = reader.result;
+    }
+    reader.readAsDataURL(fileImage);
   }
 
   onAddPost() {
