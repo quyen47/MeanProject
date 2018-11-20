@@ -1,17 +1,21 @@
 <mat-card>
   <mat-spinner *ngIf="isLoading"></mat-spinner>
-  <form (submit)="onAddPost(postForm)" #postForm="ngForm" *ngIf="!isLoading">
+  <form [formGroup]="postForm" (submit)="onAddPost()" *ngIf="!isLoading">
     <mat-form-field>
-      <input matInput type="text" [ngModel]="post?.title" name="title" #title="ngModel" placeholder="Title" required>
+      <input matInput type="text" formControlName="title" placeholder="Title">
         <!-- ngModel: this is directive that child control with the form (send value of this input via form) -->
         <!-- name="title" is attribute of this ngModule(form) (like Java that we can be use .title in file.ts) -->
         <!-- #title="ngModel": This gives you a reference to the Angular NgModel; assign ngModel to tag "title" to call at other location to use control status like invalid...  -->
-      <mat-error *ngIf="title.invalid">Please enter a post to this the title</mat-error>
+      <mat-error *ngIf="postForm.get('title').invalid">Please enter a post to this the title</mat-error>
     </mat-form-field>
+    <div>
+      <button mat-stroked-button type="button" color="primary" (click)="inputImage.click()">Upload image</button>
+      <input type="file" #inputImage id="inputImage">
+    </div>
     <mat-form-field>
       <!-- ? this will force angular to check whether a post exists before it tries to read the title and it will populate this field with nothing.  -->
-      <textarea matInput row="1" [ngModel]="post?.content" name="content" #content="ngModel" placeholder="Content" required></textarea>
-      <mat-error *ngIf="content.invalid">Please enter a post to this the content</mat-error>
+      <textarea matInput row="1" formControlName="content" placeholder="Content"></textarea>
+      <mat-error *ngIf="postForm.get('content').invalid">Please enter a post to this the content</mat-error>
     </mat-form-field>
     <button mat-raised-button color="warn" type="submit">save post</button>
   </form>

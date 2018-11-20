@@ -9,3 +9,7 @@ textarea {
 mat-spinner {
   margin: auto;
 }
+
+#inputImage {
+  visibility: hidden;
+}
