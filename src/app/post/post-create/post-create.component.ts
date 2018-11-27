@@ -50,16 +50,16 @@ export class PostCreateComponent implements OnInit {
       }
     });
   }
-
+  
   onImagePicked(event: Event) {
     const fileImage = (event.target as HTMLInputElement).files[0];
     this.postForm.patchValue({image: fileImage});
     // this.postForm.get('image').updateValueAndValidity();
 
     const reader = new FileReader();
-    reader.onload= () => {
-      this.imagePreview = reader.result;
-    }
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
     reader.readAsDataURL(fileImage);
   }
 
