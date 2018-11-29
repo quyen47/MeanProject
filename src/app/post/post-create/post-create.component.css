@@ -15,11 +15,12 @@ mat-spinner {
 }
 
 .image-preview {
-  height: 5rem;
+  width: 100%;
   margin: 1rem;
 }
 
 .image-preview img {
-  height: 100%;
+  width: 50%;
+  box-shadow: 1px 1px 5px;
 }
 

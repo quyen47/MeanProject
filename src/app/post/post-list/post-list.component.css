@@ -12,10 +12,10 @@ mat-spinner {
 }
 
 .post-imagePath {
-  height: 10rem;
-  margin: 1rem;
+  width: 100%;
 }
 
 .post-imagePath img {
-  height: 100%;
+  width: 50%;
+  box-shadow: 1px 1px 5px;
 }

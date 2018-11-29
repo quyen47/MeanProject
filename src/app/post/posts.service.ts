@@ -75,10 +75,19 @@ export class PostsService {
             .delete('http://localhost:3000/api/posts/' + postId);
     }
 
-    updatePost(id: string, title: string, content: string, imagePath: string) {
-        const post: Post = { id: id, title: title, content: content, imagePath: imagePath };
+    updatePost(id: string, title: string, content: string, image: File | string) {
+        let postData: Post | FormData;
+        if (typeof(image === 'object')) {
+            postData = new FormData();
+            postData.append('id', id);
+            postData.append('title', title);
+            postData.append('content', content);
+            postData.append('image', image, title);
+        } else {
+            postData = { id: id, title: title, content: content, imagePath: image };
+        }
         this.http
-            .put('http://localhost:3000/api/posts/' + id, post)
+            .put('http://localhost:3000/api/posts/' + id, postData)
             .subscribe((responseData) => {
                 console.log(responseData);
                 this.router.navigate(['/']);
