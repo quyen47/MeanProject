@@ -6,7 +6,8 @@ const router = express.Router();
 const MIME_TYPE_MAP = {
     'image/png': 'png',
     'image/jpg': 'jpg',
-    'image/jpeg': 'jpg'
+    'image/jpeg': 'jpg',
+    'image/gif': 'gif'
 }
 
 const storage = multer.diskStorage({
@@ -15,8 +16,8 @@ const storage = multer.diskStorage({
         let error = new Error("Invalid mime type");
         if (isValid) {
             error = null;
-        }
-        cb(error, 'backend/images')
+        };
+        cb(error, 'backend/images');
     },
     filename: function (req, file, cb) {
         const name = file.originalname.toLowerCase().split(' ').join('_');

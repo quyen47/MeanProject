@@ -72,7 +72,7 @@ export class PostsService {
 
     deletePost(postId: string) {
         return this.http
-            .delete('http://localhost:3000/api/posts/' + postId);
+            .delete('http://localhost:3000/api/postss/' + postId);
     }
 
     updatePost(id: string, title: string, content: string, image: File | string) {
@@ -84,7 +84,7 @@ export class PostsService {
             postData.append('content', content);
             postData.append('image', image, title);
         } else {
-            postData = { id: id, title: title, content: content, imagePath: image };
+            postData = { id: id, title: title, content: content, imagePath: image as string };
         }
         this.http
             .put('http://localhost:3000/api/posts/' + id, postData)
